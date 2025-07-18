@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bloque.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tp2</a> &gt; <a href="index.source.html" class="el_package">aed</a> &gt; <span class="el_source">Bloque.java</span></div><h1>Bloque.java</h1><pre class="source lang-java linenums">package aed;
+
+public class Bloque implements Comparable&lt;Bloque&gt; {
+    ListaEnlazada&lt;Transaccion&gt; ListaTransacciones;  
+    HEAP&lt;Transaccion&gt; HeapTransacciones;           
+    int sumaMontos;                                
+    int cantidadTx;                                
+
+<span class="fc" id="L9">    public Bloque(Transaccion[] transacciones) {</span>
+<span class="fc" id="L10">        ListaTransacciones = new ListaEnlazada&lt;&gt;();</span>
+<span class="fc" id="L11">        HeapTransacciones = new HEAP&lt;&gt;();</span>
+<span class="fc" id="L12">        sumaMontos = 0;</span>
+<span class="fc" id="L13">        cantidadTx = 0;</span>
+
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        for (Transaccion tx : transacciones) {</span>
+<span class="fc" id="L16">            Nodo&lt;Transaccion&gt; nodo = ListaTransacciones.agregarAtrasYDevolverNodo(tx);</span>
+            
+<span class="fc" id="L18">            Handle&lt;Transaccion&gt; h = HeapTransacciones.Encolar(tx);</span>
+<span class="fc" id="L19">            tx.setHandle(h);</span>
+<span class="fc" id="L20">            h.setNodoLista(nodo);</span>
+
+<span class="fc bfc" id="L22" title="All 2 branches covered.">            if (tx.id_comprador() != 0) {</span>
+<span class="fc" id="L23">                sumaMontos += tx.monto();</span>
+<span class="fc" id="L24">                cantidadTx++;</span>
+            }
+        }
+<span class="fc" id="L27">    }   </span>
+
+    private boolean esTransaccionCreacion(Transaccion tx) {
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        return tx.id_comprador() == 0; </span>
+    }
+
+    public int sumaMontos(ListaEnlazada&lt;Transaccion&gt; lista){
+<span class="nc" id="L34">        int suma=0;</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (int i=0;i&lt;lista.longitud();i++){</span>
+<span class="nc" id="L36">            Transaccion tx = lista.obtener(i);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            if (!esTransaccionCreacion(tx)) {</span>
+<span class="nc" id="L38">                suma += tx.monto();</span>
+            }
+        }
+<span class="nc" id="L41">        return suma;</span>
+    }
+
+    @Override
+    public int compareTo(Bloque otro) {
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (this.sumaMontos != otro.sumaMontos) {</span>
+<span class="nc" id="L47">             return this.sumaMontos - otro.sumaMontos;</span>
+    }   else {
+<span class="nc" id="L49">             return this.cantidadTx - otro.cantidadTx;</span>
+    }
+}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

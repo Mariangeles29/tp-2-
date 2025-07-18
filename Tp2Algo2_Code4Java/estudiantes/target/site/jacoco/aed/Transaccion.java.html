@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Transaccion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tp2</a> &gt; <a href="index.source.html" class="el_package">aed</a> &gt; <span class="el_source">Transaccion.java</span></div><h1>Transaccion.java</h1><pre class="source lang-java linenums">package aed;
+
+class Transaccion implements Comparable&lt;Transaccion&gt; {
+    int id;
+    int comprador;
+    int vendedor;
+    int monto;
+    Handle&lt;Transaccion&gt; handle;
+
+<span class="fc" id="L10">    public Transaccion(int id, int comprador, int vendedor, int monto) {</span>
+<span class="fc" id="L11">        this.id = id;</span>
+<span class="fc" id="L12">        this.comprador = comprador;</span>
+<span class="fc" id="L13">        this.vendedor = vendedor;</span>
+<span class="fc" id="L14">        this.monto = monto;</span>
+<span class="fc" id="L15">        this.handle = null;</span>
+<span class="fc" id="L16">    }</span>
+
+<span class="nc" id="L18">    public int id() { return id; }</span>
+<span class="fc" id="L19">    public int id_comprador() { return comprador; }</span>
+<span class="fc" id="L20">    public int id_vendedor() { return vendedor; }</span>
+<span class="fc" id="L21">    public int monto() { return monto; }</span>
+<span class="nc" id="L22">    public Handle&lt;Transaccion&gt; handle() {return handle;}</span>
+
+<span class="fc" id="L24">    public void setHandle(Handle&lt;Transaccion&gt; h) { this.handle = h; }</span>
+
+    public int compareTo(Transaccion otra) {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">       if (this.monto != otra.monto) {</span>
+<span class="fc" id="L28">        return Integer.compare(otra.monto, this.monto); </span>
+    } else {
+<span class="fc" id="L30">        return Integer.compare(otra.id, this.id);       </span>
+    }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (this == o) return true; </span>
+<span class="pc bpc" id="L37" title="2 of 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+
+<span class="fc" id="L39">        Transaccion t = (Transaccion) o;</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (id != t.id) return false;</span>
+
+<span class="fc" id="L42">        return true;</span>
+    }
+
+    public String toString() {
+<span class="nc" id="L46">        return &quot;Transaccion{id=&quot; + id + &quot;, comprador=&quot; + comprador + &quot;, vendedor=&quot; + vendedor + &quot;, monto=&quot; + monto + &quot;}&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

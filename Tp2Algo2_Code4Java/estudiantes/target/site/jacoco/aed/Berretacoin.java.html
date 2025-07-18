@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Berretacoin.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tp2</a> &gt; <a href="index.source.html" class="el_package">aed</a> &gt; <span class="el_source">Berretacoin.java</span></div><h1>Berretacoin.java</h1><pre class="source lang-java linenums">package aed;
+
+import java.util.ArrayList;
+
+public class Berretacoin {
+    private HEAP&lt;Usuario&gt; montoUsuario;   // Heap para usuarios ordenados por dinero (O(1) para maximoTenedor)
+    private ArrayList&lt;Usuario&gt; usuarios;  // Lista de usuarios (O(1) acceso por id)
+    private Bloque ultimoBloque;         // Referencia al último bloque
+
+    // O(P)
+<span class="fc" id="L11">    public Berretacoin(int n_usuarios) {</span>
+<span class="fc" id="L12">        montoUsuario = new HEAP&lt;&gt;();</span>
+<span class="fc" id="L13">        usuarios = new ArrayList&lt;&gt;(n_usuarios);</span>
+        
+        // Inicializar usuarios con saldo 0
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        for (int i = 1; i &lt;= n_usuarios; i++) {</span>
+<span class="fc" id="L17">            Usuario u = new Usuario(i, 0);</span>
+<span class="fc" id="L18">            Handle&lt;Usuario&gt; h = montoUsuario.Encolar(u); // O(1) por usuario (total O(P))</span>
+<span class="fc" id="L19">            u.setHandle(h);</span>
+<span class="fc" id="L20">            usuarios.add(u);</span>
+        }
+<span class="fc" id="L22">    }</span>
+
+    // O(nb * log P)
+    public void agregarBloque(Transaccion[] transacciones) {
+<span class="fc" id="L26">        Bloque nuevoBloque = new Bloque(transacciones); // O(nb) para crear lista, O(nb log nb) para heap</span>
+        
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        for (Transaccion tx : transacciones) { // O(nb) iteraciones</span>
+            // Procesar transacción
+<span class="fc" id="L30">            int id_comp = tx.id_comprador();</span>
+<span class="fc" id="L31">            int id_vend = tx.id_vendedor();</span>
+<span class="fc" id="L32">            int monto = tx.monto();</span>
+
+<span class="fc" id="L34">            Usuario vendedor = usuarios.get(id_vend - 1); // O(1)</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">            Usuario comprador = (id_comp != 0) ? usuarios.get(id_comp - 1) : null;</span>
+
+<span class="fc bfc" id="L37" title="All 2 branches covered.">            if (comprador != null) {</span>
+<span class="fc" id="L38">                comprador._dinero -= monto;</span>
+<span class="fc" id="L39">                montoUsuario.actualizarElemento(comprador.getHandle()); // O(log P)</span>
+            }
+
+<span class="fc" id="L42">            vendedor._dinero += monto;</span>
+<span class="fc" id="L43">            montoUsuario.actualizarElemento(vendedor.getHandle()); // O(log P)</span>
+        }
+        
+<span class="fc" id="L46">        ultimoBloque = nuevoBloque;</span>
+<span class="fc" id="L47">    }</span>
+
+    // O(1)
+    public Transaccion txMayorValorUltimoBloque() {
+<span class="pc bpc" id="L51" title="2 of 4 branches missed.">        if (ultimoBloque == null || ultimoBloque.HeapTransacciones.size() == 0) {</span>
+<span class="nc" id="L52">            return null;</span>
+        }
+<span class="fc" id="L54">        return ultimoBloque.HeapTransacciones.Proximo(); // O(1)</span>
+    }
+
+    // O(nb)
+    public Transaccion[] txUltimoBloque() {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (ultimoBloque == null) {</span>
+<span class="nc" id="L60">            return new Transaccion[0];</span>
+        }
+        
+<span class="fc" id="L63">        int longi = ultimoBloque.ListaTransacciones.longitud();</span>
+<span class="fc" id="L64">        Transaccion[] copia = new Transaccion[longi];</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (int i = 0; i &lt; longi; i++) { // O(nb)</span>
+<span class="fc" id="L66">            copia[i] = ultimoBloque.ListaTransacciones.obtener(i);</span>
+        }
+<span class="fc" id="L68">        return copia;</span>
+    }
+
+    // O(1)
+    public int maximoTenedor() {
+<span class="fc" id="L73">        return montoUsuario.Proximo().id(); // O(1)</span>
+    }
+
+    // O(1)
+    public int montoMedioUltimoBloque() {
+<span class="pc bpc" id="L78" title="1 of 4 branches missed.">        if (ultimoBloque == null || ultimoBloque.cantidadTx == 0) {</span>
+<span class="fc" id="L79">            return 0;</span>
+        }
+<span class="fc" id="L81">        return ultimoBloque.sumaMontos / ultimoBloque.cantidadTx;</span>
+    }
+
+    // O(log nb + log P)
+    public void hackearTx() {
+<span class="pc bpc" id="L86" title="2 of 4 branches missed.">        if (ultimoBloque == null || ultimoBloque.HeapTransacciones.size() == 0) return;</span>
+
+        // Extraer transacción del heap en O(log nb)
+<span class="fc" id="L89">        Transaccion tx = ultimoBloque.HeapTransacciones.Proximo();</span>
+<span class="fc" id="L90">        ultimoBloque.HeapTransacciones.Desencolar();</span>
+
+        // Eliminar de la lista usando el nodo del handle en O(1)
+<span class="fc" id="L93">        Nodo&lt;Transaccion&gt; nodo = (Nodo&lt;Transaccion&gt;) tx.handle.nodoLista();</span>
+<span class="fc" id="L94">        ultimoBloque.ListaTransacciones.eliminarNodo(nodo);</span>
+
+        // Revertir transacción en O(log P)
+<span class="fc" id="L97">        int id_comp = tx.id_comprador();</span>
+<span class="fc" id="L98">        int id_vend = tx.id_vendedor();</span>
+<span class="fc" id="L99">        int monto = tx.monto();</span>
+
+<span class="fc" id="L101">        Usuario vendedor = usuarios.get(id_vend - 1);</span>
+<span class="fc" id="L102">        vendedor._dinero -= monto;</span>
+<span class="fc" id="L103">        montoUsuario.actualizarElemento(vendedor.getHandle());</span>
+
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (id_comp != 0) {</span>
+<span class="fc" id="L106">            Usuario comprador = usuarios.get(id_comp - 1);</span>
+<span class="fc" id="L107">            comprador._dinero += monto;</span>
+<span class="fc" id="L108">            montoUsuario.actualizarElemento(comprador.getHandle());</span>
+<span class="fc" id="L109">            ultimoBloque.sumaMontos -= monto;</span>
+<span class="fc" id="L110">            ultimoBloque.cantidadTx--;</span>
+        }
+<span class="fc" id="L112">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
